@@ -1,0 +1,64 @@
+﻿node.exe : - 
+Building...
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (- Building...   
+ :String) [], Remot    
+eException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+
+Initial chunk files   | Names               |  Raw size | Estimated transfer size
+chunk-TCKEQKLU.js     | -                   | 180.05 kB |                50.42 kB
+chunk-2Z5WDLVR.js     | -                   |  85.52 kB |                21.32 kB
+main-HGO6G6N2.js      | main                |  73.46 kB |                19.31 kB
+polyfills-FFHMD2TL.js | polyfills           |  33.71 kB |                11.02 kB
+styles-2NBRSKFL.css   | styles              |  13.08 kB |                 3.01 kB
+chunk-REZQFUUR.js     | -                   |   1.99 kB |               757 bytes
+
+                      | Initial total       | 387.80 kB |               105.81 kB
+
+Lazy chunk files      | Names               |  Raw size | Estimated transfer size
+chunk-RH2FWWQJ.js     | -                   |  44.62 kB |                 8.57 kB
+chunk-W4O4EEE5.js     | payments-component  |  14.68 kB |                 4.06 kB
+chunk-RLEUEW4M.js     | members-component   |  14.36 kB |                 4.03 kB
+chunk-SDS66AGH.js     | voting-component    |   9.04 kB |                 3.01 kB
+chunk-XWCJTL35.js     | dashboard-component |   8.38 kB |                 2.75 kB
+chunk-IJ6G6YFQ.js     | reports-component   |   7.68 kB |                 2.46 kB
+chunk-KA7KU44T.js     | admin-component     |   6.78 kB |                 2.26 kB
+chunk-Q2LOLYTC.js     | ai-report-component |   6.58 kB |                 2.03 kB
+chunk-KXNRXMSV.js     | login-component     |   4.88 kB |                 1.59 kB
+chunk-MMYS34CZ.js     | -                   |   4.18 kB |                 1.62 kB
+chunk-FLPQYAQT.js     | -                   |   3.35 kB |                 1.32 kB
+chunk-R2CDE3RN.js     | -                   |   2.27 kB |               867 bytes
+chunk-BTDHUMJR.js     | -                   |   2.19 kB |               930 bytes
+chunk-JFLF7T3Q.js     | -                   |   1.84 kB |               834 bytes
+chunk-U633SYM7.js     | -                   | 996 bytes |               996 bytes
+...and 2 more lazy chunks files. Use "--verbose" to show all the files.
+
+Output location: C:\Users\vishw\OneDrive\Desktop\Training\example3\dist\smart-society
+
+Application bundle generation complete. [16.485 seconds]
+
+Γû▓ [WARNING] src/app/s
+hared/components/sideba
+r/sidebar.component.css
+ exceeded maximum 
+budget. Budget 2.00 kB 
+was not met by 730 
+bytes with a total of 
+2.71 kB.
+
+

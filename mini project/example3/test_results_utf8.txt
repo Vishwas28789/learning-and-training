@@ -1,0 +1,5 @@
+﻿
+> smart-society@1.0.0 test:ci
+> ng test --watch=false --browsers=ChromeHeadless
+
+
