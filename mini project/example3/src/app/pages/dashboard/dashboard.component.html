@@ -1,0 +1,218 @@
+<!-- SmartSociety — Dashboard Template -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SYLLABUS: Topic 11 (all 4 bindings), Topic 12 (directives) -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<div class="content-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <!-- BINDING: Interpolation -->
+    <h1 class="page-title">Dashboard</h1>
+    <app-health-ring [score]="healthScore" label="Health"></app-health-ring>
+  </div>
+
+  <!-- Loading Skeleton -->
+  <div *ngIf="isLoading" class="grid grid-4">
+    <div class="skeleton skeleton-card" *ngFor="let i of [1,2,3,4]; trackBy: trackByIndex"></div>
+  </div>
+
+  <!-- Stat Cards -->
+  <!-- ANGULAR: Directive — *ngIf with else template -->
+  <ng-container *ngIf="paymentSummary; else loadingTpl">
+    <div class="grid grid-4 animate-fadeUp">
+
+      <!-- ANGULAR: Directive — [appHighlight] custom directive -->
+      <div class="stat-card" appHighlight>
+        <span class="stat-label">Total Collected</span>
+        <!-- BINDING: Interpolation with pipe -->
+        <span class="stat-value" id="stat-collected">
+          {{ paymentSummary.totalCollected | currencyInr }}
+        </span>
+        <span class="stat-change positive">Collection rate: {{ paymentSummary.collectionRate }}%</span>
+      </div>
+
+      <div class="stat-card" appHighlight>
+        <span class="stat-label">Pending</span>
+        <span class="stat-value" id="stat-pending">
+          {{ paymentSummary.totalPending | currencyInr }}
+        </span>
+      </div>
+
+      <div class="stat-card" appHighlight>
+        <span class="stat-label">Overdue</span>
+        <span class="stat-value text-rust" id="stat-overdue">
+          {{ paymentSummary.totalOverdue | currencyInr }}
+        </span>
+        <span class="stat-change negative">{{ paymentSummary.latePaymentCount }} late payments</span>
+      </div>
+
+      <div class="stat-card" appHighlight>
+        <span class="stat-label">Members</span>
+        <span class="stat-value">{{ members.length }}</span>
+        <span class="stat-change">{{ getOverdueMembers().length }} overdue</span>
+      </div>
+    </div>
+
+    <!-- Interactive Bar Chart -->
+    <div class="card chart-card mt-lg animate-fadeUp delay-1">
+      <div class="card-header">
+        <span class="card-title">Monthly Collection Trend</span>
+        <span class="chart-legend">
+          <span class="legend-dot legend-collected"></span> Collected
+          <span class="legend-dot legend-pending"></span> Pending
+        </span>
+      </div>
+      <div class="chart-container interactive-chart">
+        <svg viewBox="0 0 600 260" class="bar-chart">
+          <!-- Grid lines -->
+          <line x1="60" y1="30" x2="580" y2="30" stroke="#e5e7eb" stroke-dasharray="4"/>
+          <line x1="60" y1="80" x2="580" y2="80" stroke="#e5e7eb" stroke-dasharray="4"/>
+          <line x1="60" y1="130" x2="580" y2="130" stroke="#e5e7eb" stroke-dasharray="4"/>
+          <line x1="60" y1="180" x2="580" y2="180" stroke="#e5e7eb" stroke-dasharray="4"/>
+          <line x1="60" y1="220" x2="580" y2="220" stroke="#d1d5db"/>
+
+          <!-- Y axis labels -->
+          <text x="50" y="35" text-anchor="end" fill="#9ca3af" font-size="11" font-family="Inter">100%</text>
+          <text x="50" y="85" text-anchor="end" fill="#9ca3af" font-size="11" font-family="Inter">75%</text>
+          <text x="50" y="135" text-anchor="end" fill="#9ca3af" font-size="11" font-family="Inter">50%</text>
+          <text x="50" y="185" text-anchor="end" fill="#9ca3af" font-size="11" font-family="Inter">25%</text>
+          <text x="50" y="225" text-anchor="end" fill="#9ca3af" font-size="11" font-family="Inter">0%</text>
+
+          <!-- Bars -->
+          <g *ngFor="let bar of monthlyData; let i = index; trackBy: trackByIndex">
+            <!-- Collected bar -->
+            <rect [attr.x]="80 + i * 85"
+                  [attr.y]="220 - (bar.collected * 1.9)"
+                  width="30"
+                  [attr.height]="bar.collected * 1.9"
+                  [attr.fill]="activeBarIndex === i ? '#4f46e5' : '#6366f1'"
+                  rx="4"
+                  class="chart-bar"
+                  [class.bar-active]="activeBarIndex === i"
+                  (mouseenter)="onBarHover(i)"
+                  (mouseleave)="onBarLeave()" />
+
+            <!-- Pending bar -->
+            <rect [attr.x]="114 + i * 85"
+                  [attr.y]="220 - (bar.pending * 1.9)"
+                  width="30"
+                  [attr.height]="bar.pending * 1.9"
+                  [attr.fill]="activeBarIndex === i ? '#0d9488' : '#14b8a6'"
+                  rx="4"
+                  class="chart-bar"
+                  [class.bar-active]="activeBarIndex === i"
+                  (mouseenter)="onBarHover(i)"
+                  (mouseleave)="onBarLeave()" />
+
+            <!-- Month label -->
+            <text [attr.x]="107 + i * 85" y="242" text-anchor="middle"
+                  fill="#6b7280" font-size="12" font-family="Inter" font-weight="500">
+              {{ bar.month }}
+            </text>
+
+            <!-- Value tooltip on hover -->
+            <g *ngIf="activeBarIndex === i">
+              <rect [attr.x]="80 + i * 85 - 10" [attr.y]="220 - (bar.collected * 1.9) - 28"
+                    width="80" height="22" rx="6"
+                    fill="#1a1a2e" opacity="0.9"/>
+              <text [attr.x]="80 + i * 85 + 30" [attr.y]="220 - (bar.collected * 1.9) - 13"
+                    text-anchor="middle" fill="white" font-size="10" font-family="Inter" font-weight="600">
+                {{ bar.collected }}% / {{ bar.pending }}%
+              </text>
+            </g>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Admin-Only Section: Alerts Feed -->
+    <div class="card mt-lg animate-fadeUp delay-2" *ngIf="isAdmin">
+      <div class="card-header">
+        <span class="card-title">Admin Activity Feed</span>
+        <span class="admin-badge">Admin Only</span>
+      </div>
+      <ul class="alerts-list">
+        <!-- ANGULAR: Directive — *ngFor with index and trackBy -->
+        <li *ngFor="let alert of recentAlerts; let i = index; trackBy: trackByIndex"
+            class="alert-item animate-slideInLeft"
+            [style.animation-delay]="(i * 0.1) + 's'">
+          {{ alert }}
+        </li>
+      </ul>
+    </div>
+
+    <!-- Member-Only Section: Quick Summary -->
+    <div class="card mt-lg animate-fadeUp delay-2" *ngIf="!isAdmin">
+      <div class="card-header">
+        <span class="card-title">Your Summary</span>
+        <span class="member-badge">Member View</span>
+      </div>
+      <ul class="alerts-list">
+        <li class="alert-item">Your maintenance is up to date</li>
+        <li class="alert-item">Next payment due in 15 days</li>
+        <li class="alert-item">Society health score: {{ healthScore }}/100</li>
+        <li class="alert-item">Community voting is active — participate now</li>
+      </ul>
+    </div>
+
+    <!-- Recent Payments Table -->
+    <div class="card mt-lg animate-fadeUp delay-3">
+      <div class="card-header">
+        <span class="card-title">Recent Payments</span>
+        <a routerLink="/payments" class="btn btn-outline btn-sm">View All</a>
+      </div>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Flat</th>
+              <th>Amount</th>
+              <th>Date</th>
+              <th>Mode</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let payment of getRecentPayments(); trackBy: trackByPaymentId">
+              <td>{{ payment.flatNo }}</td>
+              <td>{{ payment.amount | currencyInr }}</td>
+              <td>{{ payment.date }}</td>
+              <td>{{ payment.mode }}</td>
+              <td>
+                <!-- ANGULAR: Directive — [ngClass] for dynamic chip class -->
+                <span class="chip" [ngClass]="getStatusClass(payment.status)">
+                  {{ payment.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Overdue Members (Admin only) -->
+    <div class="card mt-lg animate-fadeUp delay-4" *ngIf="isAdmin && getOverdueMembers().length > 0">
+      <div class="card-header">
+        <span class="card-title text-rust">Overdue Members</span>
+      </div>
+      <div class="overdue-grid">
+        <div *ngFor="let member of getOverdueMembers(); trackBy: trackByMemberId"
+             class="overdue-card"
+             appHighlight="rgba(244, 63, 94, 0.06)">
+          <div class="overdue-info">
+            <strong>{{ member.ownerName }}</strong>
+            <span class="text-muted">Flat {{ member.flatNo }}</span>
+          </div>
+          <span class="text-rust">{{ member.outstandingAmount | currencyInr }}</span>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ANGULAR: Directive — *ngIf else template reference -->
+  <ng-template #loadingTpl>
+    <div class="grid grid-4">
+      <div class="skeleton skeleton-card" *ngFor="let i of [1,2,3,4]; trackBy: trackByIndex"></div>
+    </div>
+  </ng-template>
+</div>

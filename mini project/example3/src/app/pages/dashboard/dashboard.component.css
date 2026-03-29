@@ -1,0 +1,135 @@
+/* Dashboard Component — Premium Styles */
+
+/* Chart Card */
+.chart-card {
+  border: none;
+  box-shadow: var(--shadow-3d);
+  background: var(--paper);
+  overflow: hidden;
+}
+
+.chart-card .card-header {
+  border-bottom: 1px solid var(--paper-cool);
+  padding-bottom: var(--space-md);
+}
+
+.chart-legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--text-sm);
+  color: var(--slate);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+  margin-left: var(--space-sm);
+}
+
+.legend-collected {
+  background: var(--gradient-primary);
+}
+
+.legend-pending {
+  background: var(--gradient-teal);
+}
+
+.interactive-chart {
+  padding: var(--space-md) 0;
+  position: relative;
+}
+
+.chart-bar {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.chart-bar:hover,
+.chart-bar.bar-active {
+  filter: brightness(1.1);
+  transform-origin: bottom;
+}
+
+/* Alerts */
+.alerts-list {
+  list-style: none;
+  padding: 0;
+}
+
+.alert-item {
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--paper-cool);
+  font-size: var(--text-sm);
+  opacity: 0;
+  animation: slideInLeft 0.4s var(--ease-out) forwards;
+  transition: background 0.15s ease;
+  border-radius: var(--radius-sm);
+}
+
+.alert-item:hover {
+  background: rgba(99, 102, 241, 0.03);
+}
+
+.alert-item:last-child {
+  border-bottom: none;
+}
+
+/* Role Badges */
+.admin-badge {
+  display: inline-flex;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-full);
+  background: rgba(139, 92, 246, 0.1);
+  color: var(--violet);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.member-badge {
+  display: inline-flex;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-full);
+  background: rgba(20, 184, 166, 0.1);
+  color: var(--teal);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(20, 184, 166, 0.15);
+}
+
+/* Overdue Grid */
+.overdue-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--space-md);
+}
+
+.overdue-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-lg);
+  border: 1px solid rgba(244, 63, 94, 0.12);
+  border-radius: var(--radius-md);
+  transition: all var(--duration-fast) var(--ease-out);
+  background: rgba(244, 63, 94, 0.02);
+}
+
+.overdue-card:hover {
+  border-color: rgba(244, 63, 94, 0.3);
+  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.08);
+  transform: translateY(-2px);
+}
+
+.overdue-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}

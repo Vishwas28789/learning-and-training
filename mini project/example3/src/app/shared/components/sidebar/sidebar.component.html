@@ -1,0 +1,55 @@
+<!-- SmartSociety — Sidebar Template -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SYLLABUS COVERAGE:                                         -->
+<!--   Topic 11: All 4 binding types demonstrated               -->
+<!--   Topic 12: *ngFor, *ngIf, [ngClass] directives            -->
+<!--   Topic 15: RouterLink, RouterLinkActive                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<!-- BINDING: Property Binding — [class.collapsed] -->
+<aside class="sidebar" *ngIf="!isLoginPage()"
+       [class.collapsed]="isCollapsed">
+
+  <!-- Brand Header -->
+  <div class="sidebar-header">
+    <!-- BINDING: Interpolation -->
+    <h2 class="brand" *ngIf="!isCollapsed">Smart<span class="text-gold">Society</span></h2>
+    <h2 class="brand" *ngIf="isCollapsed">S<span class="text-gold">S</span></h2>
+    <!-- BINDING: Event Binding — (click) -->
+    <button class="toggle-btn" (click)="toggleSidebar()" aria-label="Toggle sidebar">
+      {{ isCollapsed ? '→' : '←' }}
+    </button>
+  </div>
+
+  <!-- Navigation Links -->
+  <nav class="sidebar-nav">
+    <!-- ANGULAR: Directive — *ngFor with trackBy -->
+    <a *ngFor="let item of getVisibleNavItems(); trackBy: trackByRoute"
+       [routerLink]="item.route"
+       routerLinkActive="active"
+       class="nav-item"
+       [attr.aria-label]="item.label">
+
+      <!-- BINDING: Interpolation -->
+      <span class="nav-label">{{ item.label }}</span>
+    </a>
+  </nav>
+
+  <!-- User Profile Section -->
+  <!-- ANGULAR: Directive — *ngIf with conditional rendering -->
+  <div class="sidebar-footer" *ngIf="currentUser">
+    <div class="user-info" *ngIf="!isCollapsed">
+      <div class="user-avatar">{{ currentUser.name.charAt(0) }}</div>
+      <div class="user-details">
+        <!-- BINDING: Interpolation -->
+        <span class="user-name">{{ currentUser.name }}</span>
+        <span class="user-role">{{ currentUser.role | titlecase }}</span>
+      </div>
+    </div>
+    <!-- BINDING: Event Binding — (click) -->
+    <button class="logout-btn" (click)="onLogout()">
+
+      <span>Logout</span>
+    </button>
+  </div>
+</aside>

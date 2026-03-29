@@ -1,0 +1,76 @@
+<!-- SmartSociety — Voting Template -->
+<div class="content-container">
+  <div class="page-header">
+    <h1 class="page-title">Expense Voting</h1>
+  </div>
+
+  <div *ngIf="isLoading" class="grid grid-2">
+    <div class="skeleton skeleton-card" *ngFor="let i of [1,2,3,4]; trackBy: trackByIndex"></div>
+  </div>
+
+  <div class="proposals-grid" *ngIf="!isLoading">
+    <div *ngFor="let expense of expenses; trackBy: trackByExpenseId"
+         class="proposal-card card animate-fadeUp"
+         [appAnomalyFlag]="expense.amount"
+         appHighlight>
+
+      <!-- Header -->
+      <div class="proposal-header">
+        <h3>{{ expense.title }}</h3>
+        <span class="chip" [ngClass]="getStatusClass(expense.status)">
+          {{ expense.status | titlecase }}
+        </span>
+      </div>
+
+      <!-- Amount with anomaly directive -->
+      <div class="proposal-amount" [ngClass]="{ 'text-rust': expense.isAnomaly }">
+        {{ expense.amount | currencyInr }}
+        <span class="anomaly-tag" *ngIf="expense.isAnomaly">FLAGGED</span>
+      </div>
+
+      <!-- Details -->
+      <p class="proposal-desc">{{ expense.description }}</p>
+      <div class="proposal-meta">
+        <span>Vendor: {{ expense.vendor }}</span>
+        <span>Proposed by: {{ expense.proposedBy }}</span>
+      </div>
+
+      <!-- Vote Bar -->
+      <div class="vote-bar-container">
+        <div class="vote-bar">
+          <!-- BINDING: [ngStyle] for dynamic width -->
+          <div class="vote-fill-for"
+               [ngStyle]="{ 'width.%': getVotePercentage(expense) }">
+          </div>
+        </div>
+        <div class="vote-counts">
+          <span class="text-sage">{{ expense.votesFor }} For</span>
+          <span class="text-muted">{{ getVotePercentage(expense) }}% approval</span>
+          <span class="text-rust">{{ expense.votesAgainst }} Against</span>
+        </div>
+      </div>
+
+      <!-- Countdown -->
+      <div class="countdown" *ngIf="expense.status === 'active'">
+        {{ countdowns[expense.id] || 'Calculating...' }}
+      </div>
+
+      <!-- Vote Buttons -->
+      <div class="vote-actions" *ngIf="expense.status === 'active'">
+        <button class="btn btn-success btn-sm" (click)="vote(expense.id, 'for')">
+          Approve
+        </button>
+        <button class="btn btn-danger btn-sm" (click)="vote(expense.id, 'against')">
+          Reject
+        </button>
+      </div>
+
+      <!-- Result -->
+      <div class="vote-result" *ngIf="expense.status !== 'active'">
+        <span [ngClass]="expense.status === 'approved' ? 'text-sage' : 'text-rust'">
+          {{ expense.status === 'approved' ? 'Approved' : 'Rejected' }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

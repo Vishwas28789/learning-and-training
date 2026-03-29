@@ -1,0 +1,152 @@
+<!-- SmartSociety — Reports Template -->
+<div class="content-container">
+  <div class="page-header">
+    <h1 class="page-title">Financial Reports</h1>
+    <app-health-ring [score]="healthScore" label="Health"></app-health-ring>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="grid grid-3">
+    <div class="skeleton skeleton-card" *ngFor="let i of [1,2,3]; trackBy: trackByIndex"></div>
+  </div>
+
+  <ng-container *ngIf="summary">
+    <!-- Summary Cards -->
+    <div class="grid grid-3 animate-fadeUp">
+      <div class="stat-card">
+        <span class="stat-label">Total Income</span>
+        <span class="stat-value text-sage">{{ summary.totalIncome | currencyInr }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Total Expenses</span>
+        <span class="stat-value text-rust">{{ summary.totalExpenses | currencyInr }}</span>
+      </div>
+      <div class="stat-card card-gold">
+        <span class="stat-label">Net Balance</span>
+        <span class="stat-value">{{ summary.netBalance | currencyInr }}</span>
+        <span class="stat-change" [ngClass]="summary.netBalance >= 0 ? 'positive' : 'negative'">
+          Efficiency: {{ summary.collectionEfficiency }}%
+        </span>
+      </div>
+    </div>
+
+    <!-- SVG Bar Chart — Collection Rate -->
+    <!-- Label: "SQL Stored Procedure: sp_GetMonthlyCollectionRate" -->
+    <div class="card mt-lg animate-fadeUp delay-2">
+      <div class="card-header">
+        <span class="card-title">Monthly Collection Rate</span>
+        <span class="text-muted mono" style="font-size: var(--text-xs)">
+          sp_GetMonthlyCollectionRate
+        </span>
+      </div>
+      <div class="chart-container">
+        <svg viewBox="0 0 500 250" class="bar-chart">
+          <!-- Grid lines -->
+          <line x1="0" y1="50" x2="500" y2="50" stroke="var(--paper-cool)" stroke-dasharray="4"/>
+          <line x1="0" y1="100" x2="500" y2="100" stroke="var(--paper-cool)" stroke-dasharray="4"/>
+          <line x1="0" y1="150" x2="500" y2="150" stroke="var(--paper-cool)" stroke-dasharray="4"/>
+          <line x1="0" y1="200" x2="500" y2="200" stroke="var(--paper-cool)"/>
+
+          <!-- BINDING: Property Binding on SVG — [attr.*] -->
+          <g *ngFor="let point of collectionChart; let i = index; trackBy: trackByIndex">
+            <rect [attr.x]="i * 80 + 20"
+                  [attr.y]="getBarY(point.value, 100)"
+                  [attr.width]="50"
+                  [attr.height]="getBarHeight(point.value, 100)"
+                  [attr.fill]="point.value >= 80 ? 'var(--sage)' : point.value >= 50 ? 'var(--gold)' : 'var(--rust)'"
+                  rx="4"
+                  class="bar animate-fadeUp" />
+            <text [attr.x]="i * 80 + 45" y="220" text-anchor="middle"
+                  fill="var(--ink-muted)" font-size="11" font-family="var(--font-body)">
+              {{ point.label }}
+            </text>
+            <text [attr.x]="i * 80 + 45" [attr.y]="getBarY(point.value, 100) - 5"
+                  text-anchor="middle" fill="var(--ink)" font-size="11"
+                  font-family="var(--font-heading)" font-weight="700">
+              {{ point.value }}%
+            </text>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- SVG Line Chart — Income vs Expenses Trend -->
+    <div class="card mt-lg animate-fadeUp delay-3">
+      <div class="card-header">
+        <span class="card-title">Income vs Expenses Trend</span>
+        <span class="text-muted mono" style="font-size: var(--text-xs)">
+          sp_GetIncomeExpenseTrend
+        </span>
+      </div>
+      <div class="chart-container">
+        <svg viewBox="0 0 500 250" class="line-chart">
+          <!-- Grid -->
+          <line x1="0" y1="200" x2="500" y2="200" stroke="var(--paper-cool)"/>
+
+          <!-- Income line -->
+          <path [attr.d]="getLinePath('income')"
+                fill="none" stroke="var(--sage)" stroke-width="2.5" stroke-linecap="round"/>
+
+          <!-- Expenses line -->
+          <path [attr.d]="getLinePath('expenses')"
+                fill="none" stroke="var(--rust)" stroke-width="2.5" stroke-linecap="round"
+                stroke-dasharray="6"/>
+
+          <!-- Data points -->
+          <g *ngFor="let t of trends; let i = index; trackBy: trackByIndex">
+            <text [attr.x]="i * (500 / Math.max(trends.length - 1, 1))" y="225"
+                  text-anchor="middle" fill="var(--ink-muted)" font-size="10"
+                  font-family="var(--font-body)">
+              {{ t.month.substring(0, 3) }}
+            </text>
+          </g>
+
+          <!-- Legend -->
+          <rect x="350" y="10" width="12" height="12" fill="var(--sage)" rx="2"/>
+          <text x="366" y="20" font-size="11" fill="var(--ink)" font-family="var(--font-body)">Income</text>
+          <rect x="420" y="10" width="12" height="12" fill="var(--rust)" rx="2"/>
+          <text x="436" y="20" font-size="11" fill="var(--ink)" font-family="var(--font-body)">Expenses</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Key Metrics Table -->
+    <div class="card mt-lg animate-fadeUp delay-4">
+      <div class="card-header">
+        <span class="card-title">Key Metrics</span>
+      </div>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>Value</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Collection Efficiency</td>
+              <td>{{ summary.collectionEfficiency }}%</td>
+              <td><span class="chip" [ngClass]="summary.collectionEfficiency >= 80 ? 'chip-paid' : 'chip-overdue'">
+                {{ summary.collectionEfficiency >= 80 ? 'On Track' : 'Below Target' }}
+              </span></td>
+            </tr>
+            <tr>
+              <td>Active Members</td>
+              <td>{{ summary.activeMembers }}</td>
+              <td><span class="chip chip-active">Active</span></td>
+            </tr>
+            <tr>
+              <td>Overdue Accounts</td>
+              <td>{{ summary.overdueAccounts }}</td>
+              <td><span class="chip" [ngClass]="summary.overdueAccounts > 3 ? 'chip-overdue' : 'chip-paid'">
+                {{ summary.overdueAccounts > 3 ? 'Attention' : 'Manageable' }}
+              </span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ng-container>
+</div>

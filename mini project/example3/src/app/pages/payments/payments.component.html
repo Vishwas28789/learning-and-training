@@ -1,0 +1,210 @@
+<!-- SmartSociety — Payments Page Template -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SYLLABUS: Topic 17 (Reactive Forms — 40% of interview!)    -->
+<!-- All reactive form features demonstrated here.              -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<div class="content-container">
+  <div class="page-header">
+    <h1 class="page-title">Payments</h1>
+    <div class="header-actions">
+      <button class="btn btn-outline" (click)="onExportCSV()">Export CSV</button>
+      <button class="btn btn-gold" (click)="showPaymentForm = !showPaymentForm">
+        {{ showPaymentForm ? 'Cancel' : '+ Record Payment' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- REACTIVE FORMS: Complete Payment Form                   -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="card payment-form-card animate-fadeUp" *ngIf="showPaymentForm">
+    <h3 class="card-title">Record New Payment</h3>
+
+    <!-- REACTIVE FORMS: formGroup directive -->
+    <form [formGroup]="paymentForm" (ngSubmit)="onSubmitPayment()">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Flat Number</label>
+          <!-- REACTIVE FORMS: formControlName -->
+          <select class="form-control" formControlName="flatNo">
+            <option value="">Select Flat</option>
+            <option *ngFor="let member of members; trackBy: trackByIndex" [value]="member.flatNo">
+              {{ member.flatNo }} — {{ member.ownerName }}
+            </option>
+          </select>
+          <div class="form-error" *ngIf="paymentForm.get('flatNo')?.invalid && paymentForm.get('flatNo')?.touched">
+            Flat number is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Member ID</label>
+          <input class="form-control" formControlName="memberId" placeholder="Auto-filled">
+        </div>
+      </div>
+
+      <!-- REACTIVE FORMS: Nested FormGroup — formGroupName -->
+      <div formGroupName="paymentDetails">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Amount (₹)</label>
+            <!-- REACTIVE FORMS: Validators.required, Validators.min, Validators.max -->
+            <input class="form-control" type="number" formControlName="amount" placeholder="0">
+            <div class="form-error"
+                 *ngIf="paymentForm.get('paymentDetails.amount')?.invalid && paymentForm.get('paymentDetails.amount')?.touched">
+              <span *ngIf="paymentForm.get('paymentDetails.amount')?.errors?.['required']">Amount is required</span>
+              <span *ngIf="paymentForm.get('paymentDetails.amount')?.errors?.['min']">Amount must be at least ₹1</span>
+              <span *ngIf="paymentForm.get('paymentDetails.amount')?.errors?.['max']">Maximum ₹5,00,000</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Payment Type</label>
+            <select class="form-control" formControlName="type">
+              <option *ngFor="let type of paymentTypes; trackBy: trackByIndex" [value]="type">{{ type }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <!-- REACTIVE FORMS: Custom Validator — futureDateValidator -->
+            <input class="form-control" type="date" formControlName="date">
+            <div class="form-error"
+                 *ngIf="paymentForm.get('paymentDetails.date')?.invalid && paymentForm.get('paymentDetails.date')?.touched">
+              <span *ngIf="paymentForm.get('paymentDetails.date')?.errors?.['required']">Date is required</span>
+              <span *ngIf="paymentForm.get('paymentDetails.date')?.errors?.['futureDate']">Date cannot be in the future</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Payment Mode</label>
+            <select class="form-control" formControlName="mode">
+              <option *ngFor="let mode of paymentModes; trackBy: trackByIndex" [value]="mode">{{ mode }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Reference No.</label>
+            <!-- REACTIVE FORMS: Validators.pattern -->
+            <input class="form-control" formControlName="referenceNo" placeholder="e.g., UPI123456">
+            <div class="form-error"
+                 *ngIf="paymentForm.get('paymentDetails.referenceNo')?.invalid && paymentForm.get('paymentDetails.referenceNo')?.touched">
+              <span *ngIf="paymentForm.get('paymentDetails.referenceNo')?.errors?.['required']">Reference is required</span>
+              <span *ngIf="paymentForm.get('paymentDetails.referenceNo')?.errors?.['pattern']">6-20 alphanumeric characters</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <input class="form-control" formControlName="description" placeholder="Optional note">
+          </div>
+        </div>
+      </div>
+
+      <!-- REACTIVE FORMS: Nested FormGroup — Fee Details -->
+      <div formGroupName="feeDetails">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Late Fee (₹)</label>
+            <input class="form-control" type="number" formControlName="lateFee">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Total Amount (₹)</label>
+            <input class="form-control" type="number" formControlName="totalAmount" readonly>
+          </div>
+        </div>
+        <!-- REACTIVE FORMS: Cross-field validation error -->
+        <div class="form-error" *ngIf="paymentForm.get('feeDetails')?.errors?.['amountMismatch']">
+          Total amount mismatch. Expected: {{ paymentForm.get('feeDetails')?.errors?.['amountMismatch']?.expected | currencyInr }}
+        </div>
+      </div>
+
+      <!-- REACTIVE FORMS: FormArray — Additional Charges -->
+      <div class="charges-section">
+        <div class="card-header">
+          <span class="card-title">Additional Charges</span>
+          <button type="button" class="btn btn-outline btn-sm" (click)="addCharge()">+ Add Charge</button>
+        </div>
+
+        <!-- REACTIVE FORMS: formArrayName + *ngFor -->
+        <div formArrayName="additionalCharges">
+          <div *ngFor="let charge of getAdditionalCharges().controls; let i = index; trackBy: trackByIndex"
+               [formGroupName]="i"
+               class="charge-row animate-fadeUp">
+            <input class="form-control" formControlName="chargeType" placeholder="Charge type">
+            <input class="form-control" type="number" formControlName="chargeAmount" placeholder="Amount">
+            <input class="form-control" formControlName="chargeNote" placeholder="Note">
+            <button type="button" class="btn btn-danger btn-sm" (click)="removeCharge(i)">×</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Status Display -->
+      <div class="form-status" *ngIf="formStatus">
+        <span class="chip" [ngClass]="{
+          'chip-paid': formStatus === 'VALID',
+          'chip-overdue': formStatus === 'INVALID',
+          'chip-pending': formStatus === 'PENDING'
+        }">Form: {{ formStatus }}</span>
+      </div>
+
+      <!-- Submit -->
+      <!-- BINDING: Property Binding — [disabled] -->
+      <button type="submit"
+              class="btn btn-gold btn-lg w-full mt-lg"
+              [disabled]="paymentForm.invalid || isSubmitting">
+        {{ isSubmitting ? 'Recording...' : 'Record Payment' }}
+      </button>
+    </form>
+  </div>
+
+  <!-- Payments Table -->
+  <div class="card mt-lg animate-fadeUp">
+    <div class="card-header">
+      <span class="card-title">Payment History</span>
+      <span class="text-muted">{{ payments.length }} records</span>
+    </div>
+
+    <div *ngIf="isLoading" class="skeleton skeleton-card"></div>
+
+    <div class="table-container" *ngIf="!isLoading">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Flat</th>
+            <th>Amount</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Mode</th>
+            <th>Late Fee</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let payment of payments; trackBy: trackByPaymentId"
+              appHighlight
+              [appAnomalyFlag]="payment.amount">
+            <td>{{ payment.flatNo }}</td>
+            <td>{{ payment.amount | currencyInr }}</td>
+            <td>{{ payment.type }}</td>
+            <td>{{ payment.date }}</td>
+            <td>{{ payment.mode }}</td>
+            <td [ngClass]="{ 'text-rust': payment.lateFee > 0 }">
+              {{ payment.lateFee | currencyInr }}
+            </td>
+            <td>
+              <span class="chip" [ngClass]="getStatusClass(payment.status)">
+                {{ payment.status }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

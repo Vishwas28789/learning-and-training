@@ -1,0 +1,86 @@
+<!-- SmartSociety — Admin Template -->
+<div class="content-container">
+  <div class="page-header">
+    <h1 class="page-title">Admin Approvals</h1>
+    <!-- BINDING: Event Binding — (click) with Router.navigate -->
+    <button class="btn btn-outline" (click)="navigateToVoting()">View Voting</button>
+  </div>
+
+  <div *ngIf="isLoading" class="grid grid-2">
+    <div class="skeleton skeleton-card" *ngFor="let i of [1,2]; trackBy: trackByIndex"></div>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+    <!-- Pending Approvals -->
+    <h2 class="section-title">Pending ({{ pendingExpenses.length }})</h2>
+
+    <div *ngIf="pendingExpenses.length === 0" class="empty-state">
+      <p>No pending expenses to review.</p>
+    </div>
+
+    <div class="approvals-grid">
+      <div *ngFor="let expense of pendingExpenses; trackBy: trackByExpenseId"
+           class="approval-card card animate-fadeUp"
+           [appAnomalyFlag]="expense.amount"
+           appHighlight>
+        <div class="approval-header">
+          <!-- BINDING: Interpolation -->
+          <h3>{{ expense.title }}</h3>
+          <span class="chip chip-active">Pending</span>
+        </div>
+
+        <div class="approval-amount">{{ expense.amount | currencyInr }}</div>
+        <p class="approval-desc">{{ expense.description }}</p>
+
+        <div class="approval-meta">
+          <span>Vendor: {{ expense.vendor }}</span>
+          <span>Category: {{ expense.category }}</span>
+          <span>Votes: {{ expense.votesFor }} for / {{ expense.votesAgainst }} against</span>
+        </div>
+
+        <div class="anomaly-warning" *ngIf="expense.isAnomaly">
+          This expense is flagged as anomalous
+        </div>
+
+        <div class="approval-actions">
+          <!-- BINDING: Event Binding — (click) -->
+          <button class="btn btn-success" (click)="approveExpense(expense)">
+            Approve
+          </button>
+          <button class="btn btn-danger" (click)="rejectExpense(expense)">
+            Reject
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Processed History -->
+    <h2 class="section-title mt-lg">Processed ({{ processedExpenses.length }})</h2>
+
+    <div class="table-container" *ngIf="processedExpenses.length > 0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Amount</th>
+            <th>Vendor</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let expense of processedExpenses; trackBy: trackByExpenseId">
+            <td>{{ expense.title }}</td>
+            <td>{{ expense.amount | currencyInr }}</td>
+            <td>{{ expense.vendor }}</td>
+            <td>
+              <!-- ANGULAR: Directive — [ngClass] -->
+              <span class="chip" [ngClass]="getStatusClass(expense.status)">
+                {{ expense.status | titlecase }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</div>

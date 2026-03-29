@@ -1,0 +1,40 @@
+/* Payments Component Styles */
+.header-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.payment-form-card {
+  margin-bottom: var(--space-xl);
+  border-left: 3px solid var(--gold);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+@media (max-width: 640px) {
+  .form-row { grid-template-columns: 1fr; }
+}
+
+.charges-section {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--paper-cool);
+}
+
+.charge-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  align-items: start;
+  opacity: 0;
+}
+
+.form-status {
+  margin-top: var(--space-md);
+  text-align: right;
+}

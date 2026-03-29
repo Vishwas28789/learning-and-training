@@ -1,0 +1,20 @@
+/* Reports Component Styles */
+.chart-container {
+  padding: var(--space-md);
+  overflow: hidden;
+}
+
+.bar-chart, .line-chart {
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+}
+
+.bar {
+  transition: all var(--duration-slow) var(--ease-out);
+}
+
+.bar:hover {
+  opacity: 0.8;
+  filter: brightness(1.1);
+}

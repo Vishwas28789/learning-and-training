@@ -1,0 +1,59 @@
+<!-- SmartSociety — AI Report Template -->
+<div class="content-container">
+  <div class="page-header">
+    <h1 class="page-title">AI Financial Report</h1>
+    <div>
+      <button class="btn btn-gold" (click)="generateReport()" [disabled]="isGenerating">
+        {{ isGenerating ? 'Generating...' : 'Generate Report' }}
+      </button>
+      <button class="btn btn-outline" *ngIf="isComplete" (click)="resetReport()" style="margin-left: 8px;">
+        Reset
+      </button>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-report" *ngIf="!isGenerating && generatedSections.length === 0">
+    <div class="ai-icon">AI</div>
+    <h3>AI-Powered Financial Analysis</h3>
+    <p>Click "Generate Report" to get an AI-generated analysis of your society's financial health.
+       The report covers payment analysis, default risk, expense optimization, and more.</p>
+  </div>
+
+  <!-- Completed Sections -->
+  <div *ngFor="let section of generatedSections; let i = index; trackBy: trackByIndex"
+       class="report-section card animate-fadeUp"
+       [style.animation-delay]="(i * 0.1) + 's'">
+    <div class="section-header">
+      <h3>{{ section.heading }}</h3>
+      <span class="confidence-badge">
+        {{ (section.confidence * 100).toFixed(0) }}% confidence
+      </span>
+    </div>
+    <p class="section-content">{{ section.content }}</p>
+  </div>
+
+  <!-- Currently Typing Section -->
+  <div class="report-section card typing-section" *ngIf="isGenerating && currentSectionIndex < sections.length">
+    <div class="section-header">
+      <h3>{{ sections[currentSectionIndex].heading }}</h3>
+      <span class="generating-indicator">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </span>
+    </div>
+    <p class="section-content typing">
+      {{ displayedText }}<span class="cursor">|</span>
+    </p>
+  </div>
+
+  <!-- Remaining Sections (Queued) -->
+  <div *ngIf="isGenerating" class="queued-sections">
+    <div *ngFor="let section of sections.slice(currentSectionIndex + 1); trackBy: trackByIndex"
+         class="queued-card">
+      <span class="queued-icon">...</span>
+      <span>{{ section.heading }}</span>
+    </div>
+  </div>
+</div>

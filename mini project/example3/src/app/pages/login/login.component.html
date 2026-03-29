@@ -1,0 +1,88 @@
+<!-- SmartSociety — Login Page Template -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SYLLABUS: Topic 11 (all 4 bindings), Topic 17 (Reactive Forms) -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<div class="login-container">
+  <div class="login-card">
+    <!-- BINDING: Interpolation -->
+    <h1>SmartSociety</h1>
+    <p class="subtitle">Financial Intelligence Platform</p>
+
+    <!-- REACTIVE FORMS: formGroup directive -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <!-- Email Field -->
+      <div class="form-group">
+        <label class="form-label" for="email">Email</label>
+        <!-- REACTIVE FORMS: formControlName -->
+        <input id="email"
+               type="email"
+               class="form-control"
+               formControlName="email"
+               placeholder="admin@smartsociety.com">
+        <!-- REACTIVE FORMS: Validation error messages -->
+        <div class="form-error"
+             *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+          <span *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</span>
+          <span *ngIf="loginForm.get('email')?.errors?.['email']">Invalid email format</span>
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <input id="password"
+               type="password"
+               class="form-control"
+               formControlName="password"
+               placeholder="••••••">
+        <div class="form-error"
+             *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          <span *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
+          <span *ngIf="loginForm.get('password')?.errors?.['minlength']">
+            Minimum 6 characters required
+          </span>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div class="form-error" *ngIf="errorMessage" style="margin-bottom: var(--space-md); text-align: center;">
+        {{ errorMessage }}
+      </div>
+
+      <!-- BINDING: Property Binding — [disabled] -->
+      <!-- BINDING: Event Binding — (ngSubmit) on form -->
+      <button type="submit"
+              class="btn btn-gold"
+              [disabled]="isLoading">
+        {{ isLoading ? 'Signing in...' : 'Sign In' }}
+      </button>
+    </form>
+
+    <!-- Demo Quick Fill Buttons -->
+    <div class="demo-buttons">
+      <p class="demo-label">Demo Accounts:</p>
+      <div class="demo-row">
+        <!-- BINDING: Event Binding — (click) -->
+        <button class="btn btn-outline btn-sm" (click)="fillDemo('admin')">
+          Admin
+        </button>
+        <button class="btn btn-outline btn-sm" (click)="fillDemo('member')">
+          Member
+        </button>
+      </div>
+    </div>
+    <!-- Credential Reference -->
+    <div class="credentials-info">
+      <h4>Login Credentials</h4>
+      <div class="cred-item">
+        <span class="cred-role">Admin</span>
+        <span class="cred-detail">admin&#64;smartsociety.com / admin123</span>
+      </div>
+      <div class="cred-item">
+        <span class="cred-role">Member</span>
+        <span class="cred-detail">member&#64;smartsociety.com / member123</span>
+      </div>
+    </div>
+  </div>
+</div>
