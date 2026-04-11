@@ -1,7 +1,8 @@
 # Dependencies
 node_modules/
-package-lock.json
 yarn.lock
+
+# Allow package-lock.json in project subdirectories (needed for reproducible installs)
 
 # Production/Build
 dist/
